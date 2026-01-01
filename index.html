@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>한입 비트코인 | 서비스 허브</title>
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://onebitebitcoin.com/" />
+    <meta property="og:title" content="한입 비트코인 | 서비스 허브" />
+    <meta property="og:description" content="모임부터 결제, 놀이터까지 비트코인을 다각도에서 체험해보세요." />
+    <meta property="og:image" content="https://onebitebitcoin.com/thumbnail.png" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://onebitebitcoin.com/" />
+    <meta property="twitter:title" content="한입 비트코인 | 서비스 허브" />
+    <meta property="twitter:description" content="모임부터 결제, 놀이터까지 비트코인을 다각도에서 체험해보세요." />
+    <meta property="twitter:image" content="https://onebitebitcoin.com/thumbnail.png" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/favicon.png" />
+    <style>
+      :root {
+        --color-bg: #010205;
+        --color-card: rgba(255, 255, 255, 0.02);
+        --color-card-hover: rgba(22, 242, 179, 0.06);
+        --color-text: #f6f7fb;
+        --color-accent: #16f2b3;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "Pretendard", "Inter", "Noto Sans KR", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: var(--color-bg);
+        color: var(--color-text);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 32px 14px 40px;
+        position: relative;
+        overflow-x: hidden;
+      }
+
+      .bg-aurora {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .aurora {
+        position: absolute;
+        width: 160%;
+        height: 160%;
+        top: -30%;
+        left: -30%;
+        filter: blur(120px);
+        opacity: 0.5;
+        mix-blend-mode: screen;
+        animation: aurora-shift 18s ease-in-out infinite alternate;
+        background: radial-gradient(circle, rgba(22, 242, 179, 0.35), transparent 60%);
+      }
+
+      .aurora:nth-child(2) {
+        animation-duration: 24s;
+        animation-delay: -6s;
+        background: radial-gradient(circle, rgba(15, 120, 255, 0.35), transparent 60%);
+      }
+
+      .aurora:nth-child(3) {
+        animation-duration: 28s;
+        animation-delay: -12s;
+        background: radial-gradient(circle, rgba(242, 246, 255, 0.3), transparent 65%);
+      }
+
+      @keyframes aurora-shift {
+        0% {
+          transform: translate3d(-5%, -8%, 0) scale(1);
+        }
+        50% {
+          transform: translate3d(8%, 6%, 0) scale(1.1);
+        }
+        100% {
+          transform: translate3d(-6%, 10%, 0) scale(0.95);
+        }
+      }
+
+      .container {
+        width: 100%;
+        max-width: 680px;
+        display: flex;
+        flex-direction: column;
+        gap: 28px;
+        position: relative;
+        z-index: 1;
+      }
+
+      header {
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(2.1rem, 5vw, 3rem);
+        letter-spacing: -0.02em;
+      }
+
+      p {
+        margin: 0;
+        color: rgba(242, 246, 255, 0.72);
+        font-size: 1rem;
+        line-height: 1.6;
+      }
+
+      .links {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+
+      .link-card {
+        width: 100%;
+        border-radius: 18px;
+        padding: 18px 22px;
+        background: var(--color-card);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        text-decoration: none;
+        color: inherit;
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        align-items: center;
+        gap: 14px;
+        transition: border-color 200ms ease, transform 200ms ease, background 200ms ease;
+      }
+
+      .link-card:hover,
+      .link-card:focus-visible {
+        border-color: var(--color-accent);
+        transform: translateY(-3px);
+        background: var(--color-card-hover);
+        outline: none;
+      }
+
+      .logo-holder {
+        width: 54px;
+        height: 54px;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.04);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+      }
+
+      .logo-holder img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+
+      .link-body {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .link-title {
+        font-size: 1.15rem;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+      }
+
+      .link-desc {
+        font-size: 0.93rem;
+        color: rgba(242, 246, 255, 0.72);
+        line-height: 1.4;
+      }
+
+      .link-domain {
+        font-size: 0.85rem;
+        color: rgba(242, 246, 255, 0.5);
+      }
+
+      footer {
+        text-align: center;
+        font-size: 0.85rem;
+        color: rgba(242, 246, 255, 0.45);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .socials {
+        display: flex;
+        justify-content: center;
+        gap: 16px;
+      }
+
+      .social-link {
+        color: rgba(242, 246, 255, 0.7);
+        text-decoration: none;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+        transition: color 200ms ease;
+      }
+
+      .social-link:hover,
+      .social-link:focus-visible {
+        color: var(--color-accent);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="bg-aurora" aria-hidden="true">
+      <span class="aurora"></span>
+      <span class="aurora"></span>
+      <span class="aurora"></span>
+    </div>
+    <main class="container">
+      <header>
+        <h1>한입 비트코인 서비스</h1>
+        <p>모임부터 결제, 놀이터까지 비트코인을 다각도에서 체험해보세요.</p>
+      </header>
+
+      <section class="links" id="links" aria-live="polite"></section>
+
+      <footer>
+        <div class="socials">
+          <a class="social-link" href="https://x.com/onebitebitcoin" target="_blank" rel="noopener">X</a>
+          <a class="social-link" href="https://www.youtube.com/@onebitebitcoin" target="_blank" rel="noopener">YouTube</a>
+        </div>
+        <div>© <span id="year"></span> 한입 비트코인</div>
+      </footer>
+    </main>
+
+    <script>
+      const commonLogoPaths = [
+        "/apple-touch-icon.png",
+        "/android-chrome-512x512.png",
+        "/android-chrome-192x192.png",
+        "/logo512.png",
+        "/logo192.png",
+        "/logo.png",
+        "/img/logo.png",
+        "/images/logo.png",
+        "/img/logo.svg",
+        "/images/logo.svg",
+        "/static/logo.png",
+        "/static/logo.svg",
+        "/assets/logo.png",
+        "/assets/logo.svg",
+      ];
+
+      const services = [
+        {
+          url: "https://meet.onebitebitcoin.com",
+          name: "한입 모임",
+          description: "비트코인 관련 온·오프라인 모임과 밋업 정보를 한 곳에서 확인하고 참여해 보세요.",
+          logoCandidates: ["https://meet.onebitebitcoin.com/icons/logo-transparent.svg", ...commonLogoPaths],
+          openInNewTab: false,
+        },
+        {
+          url: "https://pay.onebitebitcoin.com",
+          name: "한입 지갑",
+          description: "Cashu 기반 라이트닝을 지원해 안전한 보관과 즉시 송금을 돕는 비트코인 지갑입니다.",
+          logoCandidates: [...commonLogoPaths],
+        },
+        {
+          url: "https://pos.onebitebitcoin.com",
+          name: "한입 결제",
+          description: "비트코인 결제 매장에서 상품을 등록하고 키오스크처럼 결제를 받을 수 있는 포스 솔루션입니다.",
+          logoCandidates: [...commonLogoPaths],
+        },
+        {
+          url: "https://playground.onebitebitcoin.com",
+          name: "한입 놀이터",
+          description: "비트코인 셀프커스터디 수수료 경로 비교, 수익률 분석, 모의 채굴 등 다양한 체험을 할 수 있습니다 .",
+          logoCandidates: ["https://playground.onebitebitcoin.com/icons/logo-runner.png", ...commonLogoPaths],
+        },
+      ];
+
+      const linksWrapper = document.getElementById("links");
+
+      const makeAbsoluteUrl = (maybeUrl, base) => {
+        if (!maybeUrl) return "";
+        try {
+          return new URL(maybeUrl, base).href;
+        } catch {
+          return "";
+        }
+      };
+
+      const loadLogo = (service, imgEl, holder) => {
+        const candidates = (service.logoCandidates || []).map((candidate) =>
+          makeAbsoluteUrl(candidate, service.url),
+        );
+        let index = 0;
+
+        const useFallback = () => {
+          imgEl.remove();
+          holder.textContent = service.name.replace(/^한입\s*/, "");
+          holder.style.fontWeight = "600";
+          holder.style.fontSize = "1.05rem";
+        };
+
+        const tryNext = () => {
+          if (index >= candidates.length) {
+            useFallback();
+            return;
+          }
+          const nextSrc = candidates[index++];
+          if (!nextSrc) {
+            tryNext();
+            return;
+          }
+          const tester = new Image();
+          tester.onload = () => {
+            imgEl.src = nextSrc;
+          };
+          tester.onerror = tryNext;
+          tester.src = nextSrc;
+        };
+
+        tryNext();
+      };
+
+      const createServiceRow = (service) => {
+        const domain = new URL(service.url).hostname;
+        const card = document.createElement("a");
+        card.className = "link-card";
+        card.href = service.url;
+        if (service.openInNewTab !== false) {
+          card.target = "_blank";
+          card.rel = "noopener";
+        }
+
+        const logoHolder = document.createElement("span");
+        logoHolder.className = "logo-holder";
+        const logo = document.createElement("img");
+        logo.alt = `${domain} logo`;
+        logo.loading = "lazy";
+        logoHolder.append(logo);
+
+        const body = document.createElement("span");
+        body.className = "link-body";
+        const title = document.createElement("span");
+        title.className = "link-title";
+        title.textContent = service.name;
+        const desc = document.createElement("span");
+        desc.className = "link-desc";
+        desc.textContent = service.description;
+        const subtitle = document.createElement("span");
+        subtitle.className = "link-domain";
+        subtitle.textContent = domain;
+        body.append(title, desc, subtitle);
+
+        const arrow = document.createElement("span");
+        arrow.textContent = "→";
+        arrow.setAttribute("aria-hidden", "true");
+
+        card.append(logoHolder, body, arrow);
+        linksWrapper.append(card);
+
+        loadLogo(service, logo, logoHolder);
+      };
+
+      services.forEach((service) => {
+        createServiceRow(service);
+      });
+
+      document.getElementById("year").textContent = new Date().getFullYear();
+    </script>
+  </body>
+</html>
