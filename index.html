@@ -342,10 +342,8 @@
         const card = document.createElement("a");
         card.className = "link-card";
         card.href = service.url;
-        if (service.openInNewTab !== false) {
-          card.target = "_blank";
-          card.rel = "noopener";
-        }
+        card.target = "_blank";
+        card.rel = "noopener noreferrer";
 
         const logoHolder = document.createElement("span");
         logoHolder.className = "logo-holder";
