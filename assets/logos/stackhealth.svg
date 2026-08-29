@@ -1,21 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 48 48" fill="none" role="img" aria-label="비트코이너의 하루 로고">
-  <!-- Orange Story(stackhealth) 다크 변형. favicon.svg 의 마크를 Bitcoin Dark 배경(#0A0A0A)에 얹었다 -->
-  <defs>
-    <clipPath id="fruit"><circle cx="24" cy="28" r="14"/></clipPath>
-    <mask id="bolt">
-      <rect width="48" height="48" fill="white"/>
-      <path d="M27.6 17.6L18.9 28.8H23.6L20.6 38.6L29.6 26.6H24.7Z" fill="black"/>
-    </mask>
-  </defs>
-  <rect width="48" height="48" rx="10.5" fill="#0A0A0A"/>
-  <!-- 열매를 번개가 뚫고 그 틈으로 어두운 배경이 비친다 -->
+  <!-- Orange Story(stackhealth) app-icon.svg 이식. 48 단위 좌표계를 그대로 둔다 -->
+  <mask id="bolt">
+    <rect width="48" height="48" fill="white"/>
+    <path d="M27.6 17.6L18.9 28.8H23.6L20.6 38.6L29.6 26.6H24.7Z" fill="black"/>
+  </mask>
+  <rect width="48" height="48" rx="10.5" fill="#FF8C00"/>
+  <!-- 흰 열매를 번개가 뚫고 그 틈으로 오렌지 타일이 비친다 -->
   <g mask="url(#bolt)">
-    <g clip-path="url(#fruit)">
-      <circle cx="24" cy="28" r="14" fill="#FF8C00"/>
-      <ellipse cx="34" cy="40" rx="15" ry="13" fill="#000000" opacity="0.16"/>
-      <ellipse cx="18" cy="22" rx="6.5" ry="4.5" fill="#FFFFFF" opacity="0.22" transform="rotate(-35 18 22)"/>
-    </g>
+    <circle cx="24" cy="28" r="14" fill="#FFFFFF"/>
   </g>
-  <path d="M24 15C24 12 24.5 10.5 25.5 9.5" stroke="#7A4A22" stroke-width="2.4" stroke-linecap="round"/>
-  <path d="M25.8 10.6C28.2 4.6 34.4 2.4 38.6 4.2C38.4 9.8 32.8 13.2 25.8 10.6Z" fill="#3DBE73"/>
+  <!-- 갈색 꼭지는 오렌지 타일에 묻히므로 잎과 같은 진초록 -->
+  <path d="M24 15C24 12 24.5 10.5 25.5 9.5" stroke="#1F7A47" stroke-width="2.4" stroke-linecap="round"/>
+  <path d="M25.8 10.6C28.2 4.6 34.4 2.4 38.6 4.2C38.4 9.8 32.8 13.2 25.8 10.6Z" fill="#1F7A47"/>
 </svg>

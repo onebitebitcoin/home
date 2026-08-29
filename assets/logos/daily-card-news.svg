@@ -11,19 +11,18 @@
   <rect width="512" height="512" rx="112" fill="url(#bg)"/>
   <g filter="url(#shadow)">
     <rect x="132" y="108" width="248" height="296" rx="34" fill="#FFF7ED"/>
-    <rect x="160" y="148" width="148" height="22" rx="11" fill="#F7931A"/>
-    <rect x="160" y="194" width="192" height="18" rx="9" fill="#FDBA74"/>
-    <rect x="160" y="230" width="164" height="18" rx="9" fill="#FED7AA"/>
-    <circle cx="256" cy="314" r="58" fill="#F7931A"/>
-    <!-- ₿ 는 채움 도형으로 짠다. 스트로크로 그리면 작은 크기에서 획이 서로 먹는다 -->
-    <g fill="#FFF7ED">
-      <rect x="240" y="266" width="13" height="16" rx="6.5"/>
-      <rect x="262" y="266" width="13" height="16" rx="6.5"/>
-      <rect x="240" y="346" width="13" height="16" rx="6.5"/>
-      <rect x="262" y="346" width="13" height="16" rx="6.5"/>
-      <rect x="220" y="282" width="15" height="64"/>
-      <path d="M230 282h37a15 15 0 0 1 0 30h-37z"/>
-      <path d="M230 310h45a18 18 0 0 1 0 36h-45z"/>
+    <rect x="160" y="140" width="148" height="20" rx="10" fill="#F7931A"/>
+    <rect x="160" y="172" width="190" height="16" rx="8" fill="#FDBA74"/>
+    <!-- ₿ 는 카드의 주역이라 크게 하나만 둔다. 이전 판은 원 안에 작게 넣고
+         위아래 볼록이 2단위 겹쳐 있어서 76px 로 줄면 한 덩어리로 뭉갰다.
+         원을 빼고 볼록 사이를 18단위 벌렸다. 세로 획(₿ 를 B 와 가르는 부분)은
+         본기둥과 같은 28단위 두께로 뽑아야 그 크기에서 살아남는다. -->
+    <g fill="#F7931A">
+      <rect x="200" y="212" width="28" height="184"/>
+      <rect x="252" y="212" width="28" height="26"/>
+      <rect x="252" y="370" width="28" height="26"/>
+      <path d="M220 236h54a29 29 0 0 1 0 58h-54z"/>
+      <path d="M220 312h60a31 31 0 0 1 0 62h-60z"/>
     </g>
   </g>
 </svg>
