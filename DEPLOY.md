@@ -21,9 +21,9 @@
 
 ---
 
-## 0. 시작 전 — 사람이 먼저 해야 할 두 가지
+## 0. 시작 전 — 사람이 먼저 확인할 것
 
-**Claude가 대신할 수 없다. 둘 다 끝난 것을 확인하고 1절로 간다.**
+**0-1과 0-2는 Claude가 대신할 수 없다. 셋 다 끝난 것을 확인하고 1절로 간다.**
 
 ### 0-1. Cloudflare에 apex 레코드 추가
 
@@ -40,6 +40,35 @@ Cloudflare 대시보드에서 `onebitebitcoin.com` 존에 이 서버를 가리�
 서버에서 고칠 수 없는 문제다.
 
 같은 존의 다른 서브도메인이 이미 정상이면 대개 이미 맞춰져 있다.
+
+### 0-3. 옛 정적 허브의 흔적 확인
+
+`onebitebitcoin.com`은 예전에 **정적 파일 방식**으로 서빙된 적이 있다.
+`onebitebitcoin/home` 저장소의 2026-01 커밋에 있는 `deploy.sh`가
+`index.html`·`favicon.png`·`thumbnail.png`를 `/var/www/html/`로 복사하는
+스크립트다. 지금 앱은 공지 API와 시세 프록시 때문에 파이썬 프로세스가 필요해서
+그 방식으로는 돌지 않는다 — 이 배포가 그 자리를 대체한다.
+
+```bash
+# 옛 vhost 가 남아 있는지. 있으면 아래 4절이 같은 파일을 덮어쓴다
+ls -l /etc/nginx/sites-enabled/ | grep -i onebitebitcoin
+sudo grep -rl "onebitebitcoin.com" /etc/nginx/sites-available/ 2>/dev/null
+
+# 옛 정적 파일이 남아 있는지 (지우지는 마라 — 대체된 뒤 사람이 판단할 몫이다)
+ls -la /var/www/html/ 2>/dev/null | head
+```
+
+옛 vhost가 있으면 **지우지 말고 백업부터 뜬다**:
+
+```bash
+sudo cp /etc/nginx/sites-available/onebitebitcoin.com \
+        /etc/nginx/sites-available/onebitebitcoin.com.bak-$(date +%F)
+```
+
+`server_name`에 `onebitebitcoin.com`을 쥔 vhost가 둘이면 nginx는 먼저 로드된
+쪽을 쓴다. 4절에서 같은 파일명(`onebitebitcoin.com`)으로 덮어쓰므로 충돌이
+생기지 않지만, 파일명이 다르면(`default`나 `onebitebitcoin` 등) 옛 심볼릭
+링크를 먼저 걷어내야 한다.
 
 ### 확인
 
