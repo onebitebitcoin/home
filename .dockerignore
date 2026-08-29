@@ -1,0 +1,17 @@
+.git
+.gitignore
+.omc
+.omx
+.playwright-mcp
+__pycache__
+*.pyc
+notices.db
+notices.db-wal
+notices.db-shm
+*.log
+.env
+deploy
+DEPLOY.md
+test_notice_api.py
+*.jpeg
+*.png

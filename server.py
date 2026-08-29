@@ -2,13 +2,15 @@
 """홈 대시보드 서버: 정적 파일 + fee.onebitebitcoin.com API 프록시(CORS 우회) + 공지사항 API"""
 import http.server
 import json
+import os
 import urllib.request
 
 import notice_api
 import notice_db
 
 UPSTREAM = "https://fee.onebitebitcoin.com"
-PORT = 8899
+# 컨테이너에서는 compose 가 넘긴 값을 쓴다. 로컬은 기본값 그대로.
+PORT = int(os.environ.get("PORT", "8899"))
 
 
 def _is_notice_api_path(path: str) -> bool:
@@ -119,9 +121,11 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         )
 
     def end_headers(self):
-        # 로고/아이콘을 고쳐도 브라우저가 옛 파일을 물고 있어서 반영이 안 된다.
-        # 로컬 개발 서버라 전부 껐다.
-        self.send_header("Cache-Control", "no-store, must-revalidate")
+        # 로고/아이콘을 고쳐도 브라우저가 옛 파일을 물고 있어서 반영이 안 되던
+        # 문제 때문에 넣었다. no-store 가 아니라 no-cache 인 이유: no-cache 는
+        # "쓰기 전에 매번 서버에 물어보라"는 뜻이라 SimpleHTTPRequestHandler 의
+        # If-Modified-Since 처리가 304 로 답한다. 최신성은 같고 전송량만 준다.
+        self.send_header("Cache-Control", "no-cache")
         self.send_header("X-Content-Type-Options", "nosniff")
         self.send_header("Referrer-Policy", "no-referrer")
         # proxy() 응답에도 end_headers 가 그대로 불리므로 이 헤더들도 함께 실린다.

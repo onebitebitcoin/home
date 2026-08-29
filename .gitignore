@@ -7,6 +7,11 @@ notices.db
 notices.db-wal
 notices.db-shm
 
+# 실제 배포 비밀값. ADMIN_PASSWORD/SECRET_KEY 가 여기 들어간다
+.env
+.env.*
+!.env.example
+
 # 로컬 도구 산출물
 .playwright-mcp/
 .omc/

@@ -1,0 +1,27 @@
+services:
+  web:
+    build: .
+    restart: unless-stopped
+    environment:
+      # :? 는 값이 비면 compose 가 기동을 거부한다는 뜻이다.
+      # 이게 없으면 ADMIN_PASSWORD 미설정 시 코드 기본값 '0000' 으로 조용히
+      # 뜬다 - 공개 서버에서 가장 피해야 할 실패다.
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?ADMIN_PASSWORD 를 .env 에 설정하라}
+      # 없으면 프로세스마다 랜덤이라 재배포할 때마다 관리자가 다시 로그인해야 한다.
+      SECRET_KEY: ${SECRET_KEY:?SECRET_KEY 를 .env 에 설정하라}
+      NOTICE_DB: /data/notices.db
+      PORT: 8899
+      # 호스트 nginx 가 앞에 있으므로 X-Forwarded-For 를 신뢰해야 레이트 리밋이
+      # 실제 클라이언트별로 걸린다. 이게 없으면 모든 요청이 nginx 주소 하나로
+      # 묶여, 한 명이 한도를 채우면 나머지 전부가 429 를 맞는다.
+      TRUST_PROXY: "1"
+    volumes:
+      - notices:/data
+    # 호스트 nginx(onebitebitcoin.com, TLS)가 이 포트로 프록시한다.
+    # 루프백에만 바인딩한다 - 0.0.0.0 이면 공인 IP:8022 로 TLS 와 Cloudflare 를
+    # 우회한 평문 직결이 뚫린다. 형제 프로젝트와 같은 관례다.
+    ports:
+      - "127.0.0.1:${WEB_PORT:-8022}:8899"
+
+volumes:
+  notices:
