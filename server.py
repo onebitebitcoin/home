@@ -23,15 +23,76 @@ def _is_notice_api_path(path: str) -> bool:
     return p == '/api/notices' or p.startswith('/api/notices/')
 
 
+# 예전에 /pos/ 에 PWA 가 있었다. 그 서비스 워커가 아직 등록된 기기는 서버가
+# 404 를 줘도 캐시된 옛 화면을 계속 띄운다 - 네트워크를 아예 타지 않기 때문이다.
+# 브라우저는 스코프 안의 페이지로 이동할 때 워커 스크립트 자체는 따로 받아
+# 갱신을 확인하므로, 그 자리에 자기를 지우는 워커를 놓아두면 방문 한 번에
+# 스스로 풀린다. 사용자가 캐시를 지울 필요가 없다.
+POS_KILLSWITCH_SW = """// /pos/ PWA 회수용. 등록된 서비스 워커를 스스로 해제한다.
+self.addEventListener('install', () => self.skipWaiting());
+
+self.addEventListener('activate', (event) => {
+  event.waitUntil((async () => {
+    for (const key of await caches.keys()) {
+      await caches.delete(key);
+    }
+    await self.registration.unregister();
+    // 열려 있는 탭을 새로 고쳐 바로 새 사이트로 보낸다.
+    for (const client of await self.clients.matchAll({ type: 'window' })) {
+      client.navigate(client.url);
+    }
+  })());
+});
+""".encode("utf-8")
+
+
 class Handler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
-        if _is_notice_api_path(self.path):
+        if self.path.split("?", 1)[0] == "/pos/service-worker.js":
+            self._send_pos_killswitch()
+        elif self._is_legacy_pos_path():
+            # 워커가 죽은 뒤에야 여기까지 온다. 302 인 이유는 나중에 /pos 를
+            # 다시 쓸 수도 있어서다 - 301 은 브라우저에 오래 박힌다.
+            self.send_response(302)
+            self.send_header("Location", "/")
+            self.send_header("Content-Length", "0")
+            self.end_headers()
+        elif _is_notice_api_path(self.path):
             notice_api.handle(self, "GET")
         elif self.path.startswith("/api/"):
             self.proxy()
         else:
             self._route_notice_page()
             super().do_GET()
+
+    def _is_legacy_pos_path(self) -> bool:
+        p = self.path.split("?", 1)[0]
+        return p == "/pos" or p.startswith("/pos/")
+
+    def _send_pos_killswitch(self):
+        self.send_response(200)
+        self.send_header("Content-Type", "text/javascript; charset=utf-8")
+        self.send_header("Content-Length", str(len(POS_KILLSWITCH_SW)))
+        self.end_headers()
+        self.wfile.write(POS_KILLSWITCH_SW)
+
+    def do_HEAD(self):
+        # do_GET 만 고치면 HEAD 가 옛 경로를 몰라 404 를 낸다. 브라우저는 워커
+        # 스크립트를 GET 으로 받지만, 헤더만 찍어보는 점검 도구가 엇갈린 답을
+        # 받으면 배포 확인이 헷갈린다.
+        if self.path.split("?", 1)[0] == "/pos/service-worker.js":
+            self.send_response(200)
+            self.send_header("Content-Type", "text/javascript; charset=utf-8")
+            self.send_header("Content-Length", str(len(POS_KILLSWITCH_SW)))
+            self.end_headers()
+        elif self._is_legacy_pos_path():
+            self.send_response(302)
+            self.send_header("Location", "/")
+            self.send_header("Content-Length", "0")
+            self.end_headers()
+        else:
+            self._route_notice_page()
+            super().do_HEAD()
 
     def do_POST(self):
         if _is_notice_api_path(self.path):
