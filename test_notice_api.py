@@ -333,9 +333,10 @@ class NoticeListTests(_BaseAPITestCase):
 
     def test_page_2_returns_correct_slice(self):
         # Arrange: 오래된 것부터 A, B, C 순으로 생성 -> 최신순 정렬이면 C, B, A
-        id_a = self.create_notice(title='페이지네이션 A')
+        # A, C 의 id 는 쓰지 않는다 - 2페이지에 걸리는 건 가운데 B 하나뿐이다.
+        self.create_notice(title='페이지네이션 A')
         id_b = self.create_notice(title='페이지네이션 B')
-        id_c = self.create_notice(title='페이지네이션 C')
+        self.create_notice(title='페이지네이션 C')
         # Act
         status, data = self.req('GET', '/api/notices?page=2&limit=1')
         # Assert
