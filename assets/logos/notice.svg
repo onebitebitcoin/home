@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="공지사항 로고">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#94A3B8"/>
+      <stop offset="1" stop-color="#475569"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="14" stdDeviation="18" flood-color="#0F172A" flood-opacity="0.28"/>
+    </filter>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  <g filter="url(#shadow)">
+    <!-- 확성기 몸체: 채움 도형 하나로 구성 (얇은 스트로크 금지 원칙 준수) -->
+    <path d="M112.5,212 L272.5,136 L272.5,348 L112.5,272 Z" fill="#F8FAFC"/>
+    <rect x="114.5" y="272" width="34" height="104" rx="16" fill="#F8FAFC"/>
+    <!-- 소리 표시: 굵은 스트로크(26) + 본체/서로 간 간격 16 이상 확보 -->
+    <path d="M315.1,212.2 A52,52 0 0 1 315.1,271.8" fill="none" stroke="#F8FAFC" stroke-width="26" stroke-linecap="round"/>
+    <path d="M354.4,184.6 A100,100 0 0 1 354.4,299.4" fill="none" stroke="#F8FAFC" stroke-width="26" stroke-linecap="round"/>
+  </g>
+</svg>

@@ -1,0 +1,443 @@
+/* ============================================================
+   공지사항 공통 스타일
+   index.html 의 다크 브라운/오렌지 톤(#120c08 배경, #fff7ed 글자)을
+   그대로 가져와 목록/상세/작성 3개 페이지에서 공유한다.
+   모바일 우선: 기본 스타일이 모바일, 720px 이상에서 데스크톱 레이아웃 확장.
+   ============================================================ */
+
+:root {
+  --bg: #120c08;
+  --fg: #fff7ed;
+  --fg-muted-88: rgba(255, 247, 237, .88);
+  --fg-muted-46: rgba(255, 247, 237, .46);
+  --fg-muted-26: rgba(255, 247, 237, .26);
+  --accent-1: #f59e0b;
+  --accent-2: #d97706;
+  --err: #f87171;
+  --radius-lg: 22px;
+  --radius-md: 16px;
+  --radius-sm: 10px;
+  --border: rgba(255, 255, 255, .14);
+  --surface: rgba(255, 255, 255, .05);
+  --surface-strong: rgba(255, 255, 255, .08);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* hidden 속성이 클래스에 밀리지 않게 못박는다.
+   .admin-login 이나 .pagination 처럼 display 를 지정한 클래스는 브라우저 기본
+   스타일시트의 [hidden] { display: none } 을 이겨버려서, JS 로 hidden 을 켜도
+   요소가 그대로 보인다. 여기서 한 번 막아두면 이후 추가되는 요소도 안전하다. */
+[hidden] { display: none !important; }
+
+html, body { min-height: 100%; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: var(--fg);
+  background: var(--bg);
+  overflow-x: hidden;
+  line-height: 1.5;
+}
+
+/* index.html 과 동일한 고정 배경 레이어 */
+.bg {
+  position: fixed; inset: 0; z-index: -1;
+  background: radial-gradient(circle at 50% 0%, rgba(245, 158, 11, .22) 0%, transparent 34%),
+              radial-gradient(circle at 18% 82%, rgba(124, 45, 18, .34) 0%, transparent 38%),
+              linear-gradient(145deg, #140b06 0%, #241006 52%, #0d0705 100%);
+}
+
+.page {
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 20px 14px 60px;
+}
+
+/* ── 헤더 / 이동 경로 ─────────────────────────────────────── */
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--fg-muted-46);
+}
+
+.breadcrumb a {
+  color: var(--fg-muted-88);
+  text-decoration: none;
+}
+.breadcrumb a:hover { color: var(--fg); }
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.page-title {
+  font-size: clamp(22px, 4vw, 28px);
+  font-weight: 720;
+  letter-spacing: -0.6px;
+  margin-bottom: 18px;
+}
+
+/* ── 버튼 ─────────────────────────────────────────────────── */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 38px;
+  padding: 0 16px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: filter .15s ease, opacity .15s ease;
+}
+.btn:hover { filter: brightness(1.08); }
+.btn:active { filter: brightness(.94); }
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+  color: #1a0f02;
+}
+
+.btn-ghost {
+  background: var(--surface);
+  border-color: var(--border);
+  color: var(--fg);
+}
+.btn-ghost:hover { background: var(--surface-strong); }
+
+.btn-danger {
+  background: rgba(248, 113, 113, .08);
+  border-color: rgba(248, 113, 113, .4);
+  color: var(--err);
+}
+.btn-danger:hover { background: rgba(248, 113, 113, .16); }
+
+.btn-disabled {
+  opacity: .32;
+  pointer-events: none;
+}
+
+.btn-link {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--fg-muted-46);
+  font-size: 12px;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+.btn-link:hover { color: var(--err); }
+
+/* ── 관리자 로그인 (목록 페이지 인라인 폼) ───────────────────── */
+
+.admin-login {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  margin-bottom: 18px;
+}
+
+.admin-login-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.admin-login-msg {
+  font-size: 12px;
+  color: var(--err);
+}
+
+/* ── 상태 메시지 (로딩/에러/빈 목록) ──────────────────────── */
+
+.state-msg {
+  font-size: 14px;
+  color: var(--fg-muted-46);
+  padding: 24px 4px;
+  text-align: center;
+}
+.state-msg--err { color: var(--err); }
+
+/* ── 공지 목록 ────────────────────────────────────────────── */
+
+.notice-list {
+  list-style: none;
+  border-top: 1px solid var(--border);
+}
+
+.notice-row { border-bottom: 1px solid var(--border); }
+
+.notice-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 4px;
+  text-decoration: none;
+  color: var(--fg);
+}
+.notice-link:hover .notice-title { color: var(--accent-1); }
+
+.notice-title {
+  font-size: 15px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: color .15s ease;
+}
+
+.notice-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--fg-muted-46);
+  flex-shrink: 0;
+}
+
+/* ── 페이지네이션 ─────────────────────────────────────────── */
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 24px;
+}
+
+.pagination-info {
+  font-size: 13px;
+  color: var(--fg-muted-46);
+}
+
+/* ── 공지 상세 ────────────────────────────────────────────── */
+
+.notice-detail {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 22px 18px;
+  margin-bottom: 24px;
+}
+
+.notice-detail-title {
+  font-size: 20px;
+  font-weight: 720;
+  letter-spacing: -0.4px;
+  margin-bottom: 10px;
+}
+
+.notice-detail-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--fg-muted-46);
+  padding-bottom: 16px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.notice-edited {
+  color: var(--fg-muted-46);
+}
+.notice-edited::before { content: '·'; margin-right: 8px; }
+
+.notice-detail-body {
+  font-size: 14.5px;
+  color: var(--fg-muted-88);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* ── 댓글 ─────────────────────────────────────────────────── */
+
+.comments-title {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+.comments-title span { color: var(--accent-1); }
+
+.comment-list {
+  list-style: none;
+  margin-bottom: 20px;
+}
+
+.comment-row {
+  padding: 14px 4px;
+  border-bottom: 1px solid var(--border);
+}
+
+.comment-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.comment-nickname {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.comment-date {
+  font-size: 12px;
+  color: var(--fg-muted-26);
+  flex: 1;
+}
+
+.comment-body {
+  font-size: 14px;
+  color: var(--fg-muted-88);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.comment-empty {
+  padding: 18px 4px;
+  color: var(--fg-muted-46);
+  font-size: 13px;
+  list-style: none;
+}
+.comment-empty--err { color: var(--err); }
+
+/* ── 댓글 작성 폼 / 공지 작성 폼 공용 입력 스타일 ─────────── */
+
+.comment-form,
+.notice-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.comment-form-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+input[type="text"],
+input[type="password"],
+textarea {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--fg);
+  font-family: inherit;
+  font-size: 14px;
+  padding: 10px 12px;
+}
+input[type="text"]:focus,
+input[type="password"]:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--accent-1);
+}
+input::placeholder,
+textarea::placeholder { color: var(--fg-muted-26); }
+
+.comment-form-row input { flex: 1; min-width: 120px; }
+
+textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.notice-form textarea { min-height: 260px; }
+
+.comment-form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.char-count {
+  font-size: 11px;
+  color: var(--fg-muted-26);
+  text-align: right;
+}
+
+.form-label {
+  font-size: 13px;
+  color: var(--fg-muted-46);
+  margin-top: 4px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+/* ── 토스트 ───────────────────────────────────────────────── */
+
+.notice-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 28px;
+  transform: translateX(-50%);
+  max-width: calc(100% - 32px);
+  padding: 12px 20px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  z-index: 100;
+  box-shadow: 0 10px 26px rgba(0,0,0,.34), 0 0 0 1px rgba(255,255,255,.12) inset;
+}
+.notice-toast--ok {
+  background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+  color: #1a0f02;
+}
+.notice-toast--err {
+  background: #2a1210;
+  color: var(--err);
+  border: 1px solid rgba(248, 113, 113, .4);
+}
+
+/* ── 반응형: index.html 브레이크포인트와 동일 ─────────────── */
+
+@media (max-width: 720px) {
+  .page { padding: 16px 10px 48px; }
+  .notice-detail { padding: 18px 14px; border-radius: 19px; }
+  .notice-form textarea { min-height: 200px; }
+}
+
+@media (max-width: 420px) {
+  .page { padding: 14px 8px 40px; }
+  .btn { height: 36px; padding: 0 12px; font-size: 12.5px; }
+  .notice-detail { padding: 16px 12px; border-radius: 17px; }
+  .comment-form-row { flex-direction: column; }
+}

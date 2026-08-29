@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>공지사항 - 한입 비트코인</title>
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32.png">
+<link rel="icon" type="image/png" sizes="64x64" href="/assets/icons/favicon-64.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png">
+<meta name="description" content="한입 비트코인 공지사항 상세">
+<link rel="stylesheet" href="/assets/notice.css">
+</head>
+<body>
+<div class="bg"></div>
+<div class="page">
+  <header class="page-header">
+    <nav class="breadcrumb" aria-label="이동 경로">
+      <a href="/">한입 비트코인</a>
+      <span aria-hidden="true">&rsaquo;</span>
+      <a href="/notice">공지사항</a>
+    </nav>
+    <div class="header-actions" id="header-actions"></div>
+  </header>
+
+  <div class="state-msg" id="state-msg" hidden></div>
+
+  <article class="notice-detail" id="notice-detail" hidden>
+    <h1 class="notice-detail-title" id="notice-title"></h1>
+    <div class="notice-detail-meta">
+      <span id="notice-date"></span>
+      <span class="notice-edited" id="notice-edited" hidden>수정됨</span>
+    </div>
+    <div class="notice-detail-body" id="notice-body"></div>
+  </article>
+
+  <section class="comments" id="comments-section" hidden>
+    <h2 class="comments-title">댓글 <span id="comments-count">0</span></h2>
+    <ul class="comment-list" id="comment-list"></ul>
+
+    <form class="comment-form" id="comment-form">
+      <div class="comment-form-row">
+        <input type="text" id="comment-nickname" placeholder="닉네임" maxlength="20" required>
+        <input type="password" id="comment-password" placeholder="비밀번호" maxlength="64" required>
+      </div>
+      <textarea id="comment-body" placeholder="댓글을 입력하세요" maxlength="1000" required></textarea>
+      <div class="comment-form-actions">
+        <span class="char-count" id="comment-char-count">0 / 1000</span>
+        <button type="submit" class="btn btn-primary">등록</button>
+      </div>
+    </form>
+  </section>
+</div>
+<script src="/assets/notice.js" defer></script>
+<script src="/assets/notice-detail.js" defer></script>
+</body>
+</html>

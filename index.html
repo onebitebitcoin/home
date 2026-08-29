@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>한입 비트코인 홈</title>
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32.png">
+<link rel="icon" type="image/png" sizes="64x64" href="/assets/icons/favicon-64.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png">
+<meta name="description" content="한입 비트코인 홈 대시보드">
+<meta property="og:type" content="website">
+<meta property="og:title" content="한입 비트코인 홈">
+<meta property="og:description" content="한입 비트코인 홈 대시보드">
+<meta property="og:image" content="/assets/og/onebite-logo.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="한입 비트코인 홈">
+<meta name="twitter:description" content="한입 비트코인 홈 대시보드">
+<meta name="twitter:image" content="/assets/og/onebite-logo.jpg">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body { min-height: 100%; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color: #fff7ed;
+    background: #120c08;
+    overflow-x: hidden;
+  }
+
+  /* 절제된 다크 브라운/오렌지 배경 */
+  .bg {
+    position: fixed; inset: 0; z-index: -1;
+    background: radial-gradient(circle at 50% 0%, rgba(245, 158, 11, .22) 0%, transparent 34%),
+                radial-gradient(circle at 18% 82%, rgba(124, 45, 18, .34) 0%, transparent 38%),
+                linear-gradient(145deg, #140b06 0%, #241006 52%, #0d0705 100%);
+  }
+
+  .container {
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 6vh 24px 4vh;
+  }
+
+  .brand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 3vh;
+  }
+
+  .brand-logo {
+    width: 70px;
+    height: 70px;
+    border-radius: 22px;
+    object-fit: cover;
+    box-shadow: 0 14px 34px rgba(0,0,0,.34), 0 0 0 1px rgba(255,255,255,.18) inset;
+  }
+
+  .brand-title {
+    font-size: clamp(28px, 3.8vw, 46px);
+    font-weight: 720;
+    letter-spacing: -1.4px;
+    line-height: 1;
+  }
+
+  .brand-subtitle {
+    font-size: 13px;
+    color: rgba(255,247,237,.46);
+    margin-top: -2px;
+  }
+
+  .market-status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 5px 8px;
+    font-size: 12px;
+    color: rgba(255,247,237,.48);
+    margin-top: -2px;
+  }
+
+  .price { font-size: inherit; font-weight: 600; letter-spacing: 0; }
+  .kimp  { font-size: inherit; font-weight: 600; margin-top: 0; }
+  .kimp .up   { color: #f87171; }
+  .kimp .down { color: #60a5fa; }
+  .err   { font-size: 14px; color: #f87171; margin-top: 8px; }
+
+  .toggle {
+    font-size: 11px;
+    color: rgba(255,247,237,.58);
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .toggle:hover { color: rgba(255,247,237,.9); }
+
+  .grid {
+    margin-top: 7vh;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(144px, 144px));
+    justify-content: center;
+    justify-items: center;
+    gap: 42px 56px;
+    width: min(1180px, 100%);
+  }
+
+  .app {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: #fff7ed;
+    transition: transform .15s ease;
+  }
+  .app:hover { transform: translateY(-4px); }
+  .app:hover .icon { box-shadow: 0 14px 34px rgba(0,0,0,.42), 0 0 0 1px rgba(255,255,255,.38) inset; }
+
+  .icon {
+    width: 76px; height: 76px;
+    border-radius: 22px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 10px 26px rgba(0,0,0,.34), 0 0 0 1px rgba(255,255,255,.22) inset;
+    transition: box-shadow .15s ease;
+  }
+  .icon span { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
+  .icon img { width: 100%; height: 100%; object-fit: cover; border-radius: inherit; display: block; }
+  .icon.logo-pad img { width: 78%; height: 78%; object-fit: contain; border-radius: 0; }
+
+  .label {
+    font-size: 13px;
+    color: rgba(255,247,237,.88);
+    text-align: center;
+    max-width: 144px;
+    line-height: 1.3;
+    overflow-wrap: keep-all;
+    word-break: keep-all;
+  }
+
+  .footer {
+    margin-top: auto;
+    font-size: 11px;
+    color: rgba(255,247,237,.26);
+  }
+
+  @media (max-width: 720px) {
+    .container { padding: 4.5vh 18px 4vh; }
+    .brand { gap: 9px; margin-bottom: 2.4vh; }
+    .brand-logo { width: 62px; height: 62px; border-radius: 19px; }
+    .brand-title { font-size: 34px; letter-spacing: -1.2px; }
+    .brand-subtitle { font-size: 12px; }
+    .market-status { font-size: 11px; padding: 0 12px; }
+    .grid {
+      margin-top: 5vh;
+      grid-template-columns: repeat(3, minmax(96px, 1fr));
+      gap: 30px 18px;
+      width: 100%;
+    }
+    .label { max-width: 108px; font-size: 12px; }
+    .icon { width: 66px; height: 66px; border-radius: 19px; }
+  }
+
+  @media (max-width: 420px) {
+    .container { padding: 4vh 14px 4vh; }
+    .brand-logo { width: 56px; height: 56px; border-radius: 17px; }
+    .brand-title { font-size: 30px; }
+    .grid {
+      grid-template-columns: repeat(2, minmax(124px, 1fr));
+      gap: 28px 20px;
+    }
+    .label { max-width: 124px; }
+  }
+</style>
+</head>
+<body>
+<div class="bg"></div>
+<div class="container">
+  <header class="brand" aria-label="한입 비트코인 홈">
+    <img class="brand-logo" src="assets/og/onebite-logo.jpg" alt="한입 비트코인 로고">
+    <h1 class="brand-title">한입 비트코인</h1>
+    <div class="market-status" aria-label="비트코인 시세">
+      <span id="price">--</span>
+      <span id="kimp"></span>
+      <button class="toggle" id="toggle">원화</button>
+    </div>
+  </header>
+  <div class="err" id="err" hidden></div>
+  <div class="grid" id="grid"></div>
+  <div class="footer">v0.1</div>
+</div>
+
+<script>
+// ── 앱 목록: 여기만 수정하면 됨 ─────────────────────────────
+const APPS = [
+  { name: '거래소 수수료', url: 'https://fee.onebitebitcoin.com', logo: 'assets/logos/btc-fee.svg', color: 'linear-gradient(135deg,#F0976A,#D4693A)' },
+  { name: '온오프라인 모임', url: 'https://meet.onebitebitcoin.com', logo: 'assets/logos/meet.svg', color: '#ffffff' },
+  { name: '비트코이너의 하루', url: 'https://stackhealth.life', logo: 'assets/logos/stackhealth.svg', color: '#0A0A0A' },
+  { name: '한입 비트코인 유튜브', url: 'https://youtube.com/@onebitebitcoin', logo: 'assets/logos/youtube-144.png', color: 'linear-gradient(135deg,#FF0033,#CC001F)' },
+  { name: '오늘의 비트코인 뉴스', url: 'https://daily.onebitebitcoin.com', logo: 'assets/logos/daily-card-news.svg', color: 'linear-gradient(135deg,#F7931A,#D97706)' },
+  { name: '오늘의 AI 뉴스', url: 'https://daily.onebitecoder.com/ai/', logo: 'assets/logos/daily-ai-news.svg', color: 'linear-gradient(135deg,#818CF8,#4338CA)' },
+  { name: '오픈채팅방', url: 'https://open.kakao.com/o/ghuvwNKh', logo: 'assets/logos/kakao-openchat.svg', color: '#FEE500' },
+];
+// ────────────────────────────────────────────────────────────
+
+// 항상 목록 끝. APPS 뒤에 무엇을 추가해도 밀려나지 않는다.
+const PINNED_LAST = {
+  name: '공지사항',
+  url: '/notice',
+  logo: 'assets/logos/notice.svg',
+  color: 'linear-gradient(135deg,#94A3B8,#475569)',
+  internal: true,
+};
+
+const grid = document.getElementById('grid');
+
+function render(filter = '') {
+  grid.innerHTML = [...APPS, PINNED_LAST]
+    .filter(a => a.name.toLowerCase().includes(filter.toLowerCase()))
+    .map(a => `
+      <a class="app" href="${a.url}"${a.internal ? '' : ' target="_blank" rel="noopener"'}>
+        <div class="icon ${a.logo ? 'logo-pad' : ''}" style="background:${a.color}">
+          ${a.logo ? `<img src="${a.logo}" alt="${a.name} 로고" loading="lazy">` : `<span>${a.name.charAt(0).toUpperCase()}</span>`}
+        </div>
+        <span class="label">${a.name}</span>
+      </a>`)
+    .join('');
+}
+
+// fee.onebitebitcoin.com 시세 (server.py가 /api를 프록시)
+const fmtKRW = n => '₩' + Math.round(n).toLocaleString('ko-KR');
+const fmtUSD = n => '$' + Math.round(n).toLocaleString('en-US');
+
+let ticker = null;      // { usd, krw, kimp }
+let showKRW = false;
+
+function renderTicker() {
+  if (!ticker) return;
+  const cls = ticker.kimp >= 0 ? 'up' : 'down';
+  const sign = ticker.kimp >= 0 ? '+' : '';
+  document.getElementById('price').textContent = showKRW ? fmtKRW(ticker.krw) : fmtUSD(ticker.usd);
+  document.getElementById('kimp').innerHTML =
+    `김치 프리미엄 <span class="${cls}">${sign}${ticker.kimp.toFixed(2)}%</span>`;
+  document.getElementById('toggle').textContent = showKRW ? '달러' : '원화';
+}
+
+document.getElementById('toggle').addEventListener('click', () => {
+  showKRW = !showKRW;
+  renderTicker();
+});
+
+async function loadTicker() {
+  const err = document.getElementById('err');
+  try {
+    const [kimpRes, tickRes] = await Promise.all([
+      fetch('/api/v1/market/kimp/live'),
+      fetch('/api/v1/market/tickers/latest'),
+    ]);
+    if (!kimpRes.ok) throw new Error('kimp HTTP ' + kimpRes.status);
+    if (!tickRes.ok) throw new Error('tickers HTTP ' + tickRes.status);
+    const d = await kimpRes.json();
+    const t = await tickRes.json();
+    if (d.error) throw new Error(d.error);
+
+    const binance = t.items.find(i => i.exchange === 'binance' && i.market_type === 'spot');
+    if (!binance) throw new Error('바이낸스 시세 없음');
+
+    ticker = { usd: binance.price, krw: d.korean_btc_prices.upbit, kimp: d.kimchi_premium_total.upbit };
+    renderTicker();
+    err.hidden = true;
+  } catch (e) {
+    // 실패해도 마지막 값은 유지, 10초 뒤 재시도
+    err.textContent = (ticker ? '시세 갱신 실패 (마지막 값 표시 중): ' : '시세 불러오기 실패: ') + e.message;
+    err.hidden = false;
+    setTimeout(loadTicker, 10000);
+  }
+}
+loadTicker();
+setInterval(loadTicker, 60000);
+
+render();
+</script>
+</body>
+</html>
