@@ -1,23 +1,23 @@
 /* ============================================================
    공지사항 공통 스타일
-   index.html 의 다크 브라운/오렌지 톤(#120c08 배경, #fff7ed 글자)을
+   index.html 의 중성 검정 톤(#0b0b0c 배경, #f4f4f5 글자)을
    그대로 가져와 목록/상세/작성 3개 페이지에서 공유한다.
    모바일 우선: 기본 스타일이 모바일, 720px 이상에서 데스크톱 레이아웃 확장.
    ============================================================ */
 
 :root {
-  --bg: #120c08;
-  --fg: #fff7ed;
-  --fg-muted-88: rgba(255, 247, 237, .88);
-  --fg-muted-46: rgba(255, 247, 237, .46);
-  --fg-muted-26: rgba(255, 247, 237, .26);
+  --bg: #0b0b0c;
+  --fg: #f4f4f5;
+  --fg-muted-88: rgba(244, 244, 245, .88);
+  --fg-muted-46: rgba(244, 244, 245, .44);
+  --fg-muted-26: rgba(244, 244, 245, .26);
   --accent-1: #f59e0b;
   --accent-2: #d97706;
   --err: #f87171;
   --radius-lg: 22px;
   --radius-md: 16px;
   --radius-sm: 10px;
-  --border: rgba(255, 255, 255, .14);
+  --border: rgba(255, 255, 255, .12);
   --surface: rgba(255, 255, 255, .05);
   --surface-strong: rgba(255, 255, 255, .08);
 }
@@ -43,9 +43,8 @@ body {
 /* index.html 과 동일한 고정 배경 레이어 */
 .bg {
   position: fixed; inset: 0; z-index: -1;
-  background: radial-gradient(circle at 50% 0%, rgba(245, 158, 11, .22) 0%, transparent 34%),
-              radial-gradient(circle at 18% 82%, rgba(124, 45, 18, .34) 0%, transparent 38%),
-              linear-gradient(145deg, #140b06 0%, #241006 52%, #0d0705 100%);
+  background: radial-gradient(120% 75% at 50% -12%, rgba(255, 255, 255, .055) 0%, transparent 62%),
+              #0b0b0c;
 }
 
 .page {
