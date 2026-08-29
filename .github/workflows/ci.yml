@@ -30,6 +30,9 @@ jobs:
           python-version: "3.11"
 
       # 앱은 표준 라이브러리만 쓴다(requirements.txt 가 없는 이유). 검사 도구만 받는다.
+      # 버전을 고정하지 않는 대신 규칙을 ruff.toml 에 적어 뒀다 - 기본 규칙 집합은
+      # ruff 버전마다 달라서, 그것만 믿으면 코드를 하나도 안 고쳤는데 어느 날
+      # 빨간불이 된다(첫 배포가 정확히 그렇게 깨졌다).
       - name: "Install tooling"
         run: pip install ruff pytest
 
