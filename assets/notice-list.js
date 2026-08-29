@@ -17,6 +17,14 @@
    */
   function renderHeaderActions() {
     const container = document.getElementById('header-actions');
+
+    // 표식이 없는 기기에는 관리자 흔적을 남기지 않는다. 로그인 폼도 접어둔다.
+    if (!adminUnlocked()) {
+      container.innerHTML = '';
+      document.getElementById('admin-login').hidden = true;
+      return;
+    }
+
     const token = adminToken();
 
     if (token) {
@@ -32,11 +40,20 @@
       return;
     }
 
-    container.innerHTML = `<button type="button" class="btn btn-ghost" id="btn-admin-toggle">관리자</button>`;
+    container.innerHTML = `
+      <button type="button" class="btn btn-ghost" id="btn-admin-toggle">관리자</button>
+      <button type="button" class="btn-link" id="btn-admin-hide">숨기기</button>
+    `;
     document.getElementById('btn-admin-toggle').addEventListener('click', () => {
       const form = document.getElementById('admin-login');
       form.hidden = !form.hidden;
       if (!form.hidden) document.getElementById('admin-password').focus();
+    });
+    document.getElementById('btn-admin-hide').addEventListener('click', () => {
+      setAdminUnlocked(false);
+      clearAdminToken();
+      toast('이 기기에서 관리자 버튼을 감췄습니다.', 'ok');
+      renderHeaderActions();
     });
   }
 
@@ -72,10 +89,13 @@
       }
     }
 
-    submit.addEventListener('click', doLogin);
-    input.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') doLogin();
+    // Enter 는 form 의 기본 제출로 잡는다. keydown 만 달아두면 doLogin 이
+    // 돌면서 폼도 같이 제출돼 페이지가 새로고침되고 실패 메시지가 지워진다.
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      doLogin();
     });
+    submit.addEventListener('click', doLogin);
     cancel.addEventListener('click', () => {
       form.hidden = true;
       input.value = '';
@@ -157,7 +177,8 @@
     }
   }
 
-  renderHeaderActions();
+  // 게이트를 먼저 소비해야 ?admin= 으로 들어온 첫 방문에도 버튼이 바로 뜬다
+  consumeAdminGate().then(renderHeaderActions);
   setupAdminLogin();
   load();
 })();

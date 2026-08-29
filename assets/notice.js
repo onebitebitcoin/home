@@ -27,8 +27,15 @@ const NOTICE_TOKEN_EXP_KEY = 'notice_admin_token_exp';
  * @returns {string | null}
  */
 function adminToken() {
-  const token = sessionStorage.getItem(NOTICE_TOKEN_KEY);
-  const expiresAt = sessionStorage.getItem(NOTICE_TOKEN_EXP_KEY);
+  // 사파리 프라이빗 모드 등에서는 접근만으로도 예외가 난다. 여기서 새면
+  // api() 가 매번 터져 페이지 전체가 멈춘다.
+  let token, expiresAt;
+  try {
+    token = sessionStorage.getItem(NOTICE_TOKEN_KEY);
+    expiresAt = sessionStorage.getItem(NOTICE_TOKEN_EXP_KEY);
+  } catch (e) {
+    return null;
+  }
   if (!token || !expiresAt) return null;
   if (Number.isNaN(Date.parse(expiresAt)) || new Date(expiresAt).getTime() <= Date.now()) {
     clearAdminToken();
@@ -43,14 +50,22 @@ function adminToken() {
  * @returns {void}
  */
 function setAdminToken(token, expiresAt) {
-  sessionStorage.setItem(NOTICE_TOKEN_KEY, token);
-  sessionStorage.setItem(NOTICE_TOKEN_EXP_KEY, expiresAt);
+  try {
+    sessionStorage.setItem(NOTICE_TOKEN_KEY, token);
+    sessionStorage.setItem(NOTICE_TOKEN_EXP_KEY, expiresAt);
+  } catch (e) {
+    /* 저장이 막힌 환경. 이번 화면에서만 관리자 상태가 안 이어진다 */
+  }
 }
 
 /** @returns {void} */
 function clearAdminToken() {
-  sessionStorage.removeItem(NOTICE_TOKEN_KEY);
-  sessionStorage.removeItem(NOTICE_TOKEN_EXP_KEY);
+  try {
+    sessionStorage.removeItem(NOTICE_TOKEN_KEY);
+    sessionStorage.removeItem(NOTICE_TOKEN_EXP_KEY);
+  } catch (e) {
+    /* 위와 같다 */
+  }
 }
 
 /**
@@ -68,6 +83,84 @@ function fmtDate(iso) {
   }).formatToParts(date);
   const get = (type) => parts.find((p) => p.type === type)?.value ?? '';
   return `${get('year')}.${get('month')}.${get('day')} ${get('hour')}:${get('minute')}`;
+}
+
+/* ── 관리자 진입 게이트 ────────────────────────────────────
+   관리자 버튼을 아무에게나 보이지 않게 하는 장치. 권한이 아니라 노출만
+   가른다 — 실제 방어선은 서버의 비밀번호와 레이트 리밋이다.
+
+   /notice?admin=<문구> 로 한 번 들어오면 그 기기에 표식이 남고, 이후로는
+   버튼이 그냥 보인다. 소스에는 문구의 SHA-256 만 두어 이 파일을 열어봐도
+   문구가 드러나지 않는다.
+
+   crypto.subtle 은 보안 컨텍스트(https 또는 localhost)에서만 있다.
+   없으면 조용히 실패시키지 않고 사유를 알린다. */
+const ADMIN_GATE_HASH = '2dd065ce494214a2be5ab41b5caa411d14108ce56a355afaf95d400d84816778';
+const ADMIN_GATE_KEY = 'notice_admin_unlocked';
+
+function adminUnlocked() {
+  try {
+    return localStorage.getItem(ADMIN_GATE_KEY) === '1';
+  } catch (e) {
+    return false;
+  }
+}
+
+function setAdminUnlocked(on) {
+  try {
+    if (on) localStorage.setItem(ADMIN_GATE_KEY, '1');
+    else localStorage.removeItem(ADMIN_GATE_KEY);
+  } catch (e) {
+    /* 사파리 프라이빗 모드 등. 이번 방문에만 안 남을 뿐이다 */
+  }
+}
+
+async function sha256Hex(text) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+  return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+/**
+ * 주소의 ?admin= 값을 확인해 표식을 켜거나 끈다. 처리 후 주소창을 정리한다.
+ * @returns {Promise<void>}
+ */
+async function consumeAdminGate() {
+  const params = new URLSearchParams(location.search);
+  if (!params.has('admin')) return;
+
+  const value = params.get('admin') || '';
+  const clean = () => {
+    params.delete('admin');
+    const qs = params.toString();
+    history.replaceState(null, '', location.pathname + (qs ? '?' + qs : ''));
+  };
+
+  if (value === 'off') {
+    setAdminUnlocked(false);
+    clearAdminToken();
+    clean();
+    toast('이 기기에서 관리자 버튼을 감췄습니다.', 'ok');
+    return;
+  }
+
+  if (!crypto.subtle) {
+    clean();
+    toast('보안 연결(https 또는 localhost)에서만 열 수 있습니다.', 'err');
+    return;
+  }
+
+  try {
+    if (await sha256Hex(value) === ADMIN_GATE_HASH) {
+      setAdminUnlocked(true);
+      clean();
+      toast('이 기기에서 관리자 버튼이 보입니다.', 'ok');
+      return;
+    }
+  } catch (e) {
+    /* 아래 공통 실패로 떨어진다 */
+  }
+  clean();
+  toast('올바르지 않은 주소입니다.', 'err');
 }
 
 let _noticeToastTimer = null;
