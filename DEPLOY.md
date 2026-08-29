@@ -278,10 +278,33 @@ curl -sI https://onebitebitcoin.com/notice | grep -iE 'content-security|x-conten
 
 ---
 
-## 6. 갱신 배포 (다음부터)
+## 6. 갱신 배포 (다음부터) — **자동이다**
+
+`main` 에 푸시하면 `.github/workflows/ci.yml` 이 lint·test 를 돌리고, 통과하면
+이 서버의 self-hosted 러너가 배포까지 마친다. **손으로 할 일은 없다.**
+
+| 무엇 | 값 |
+|---|---|
+| 러너 이름 / 라벨 | `measly-home` / `self-hosted, home` |
+| 러너 설치 위치 | `/home/measly/actions-runner-home` |
+| 러너 서비스 | `systemctl --user status actions-runner-home` |
+| 배포 디렉토리 | `/home/measly/home` (러너가 여기서 직접 pull 한다) |
+
+deploy job 이 하는 일은 `git pull --ff-only` → `docker compose build web` →
+`up -d web` → 자산 GET 검증이다. 형제 프로젝트(ai-daily-web)와 같은 구조이며
+라벨만 `home` 으로 다르다 — 라벨을 잘못 두면 남의 디렉토리를 배포한다.
+
+**배포 디렉토리를 손으로 고치지 마라.** 추적 중인 파일에 커밋되지 않은 변경이
+있으면 deploy job 이 pull 전에 멈춘다. 그대로 두면 main 에 없는 코드가 이미지에
+섞여 들어가기 때문이다. 서버에서 급히 고쳤다면 그 내용을 커밋해서 푸시해라.
+
+`.md` 만 바뀐 푸시는 워크플로가 아예 돌지 않는다(`paths-ignore`). 배포를 손으로
+다시 돌리려면 Actions 탭에서 `workflow_dispatch` 를 쓴다.
+
+러너가 죽어 배포가 안 나갈 때만 수동으로:
 
 ```bash
-cd /home/measly/home && git pull && docker compose up -d --build
+git pull --ff-only && docker compose up -d --build
 curl -s -o /dev/null -w "%{http_code}\n" localhost:8022/
 ```
 
@@ -324,9 +347,7 @@ docker compose cp web:/data/notices.db ./notices-backup-$(date +%F).db
 
 ## 아직 안 한 것
 
-- **`www.onebitebitcoin.com`**: 지금 apex와 **같은 옛 허브**를 서빙한다
-  (바이트가 동일). 이 배포는 apex만 갈아끼우므로, 그대로 두면 www는 옛 허브에
-  남아 apex와 내용이 갈린다. 같이 옮기려면 vhost의 `server_name`과 certbot의
-  `-d`에 `www.onebitebitcoin.com`을 추가하면 된다 — DNS는 이미 맞다.
-  어느 쪽이든 사람이 정할 몫이라 이번 파일에는 넣지 않았다.
+- ~~**`www.onebitebitcoin.com`**~~ — **2026-08-29 완료**. vhost `server_name` 에
+  apex와 같이 넣어 두어 www도 같은 컨테이너를 서빙한다(응답 200 확인). 앞단
+  TLS는 Cloudflare가 끊는다.
 - **백업 자동화**: 위 `docker compose cp`를 손으로 돌리는 상태다.
