@@ -47,7 +47,11 @@ jobs:
 
   deploy:
     needs: [test]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    # workflow_dispatch 도 배포까지 간다. push 만 허용하면 위에서 열어 둔 수동
+    # 재실행이 test 만 돌고 끝나, 정작 배포가 안 나갔을 때 쓸 수가 없다.
+    if: >-
+      github.ref == 'refs/heads/main' &&
+      (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
     # 이 저장소에 등록된 repo 스코프 러너다(measly-home,
     # /home/measly/actions-runner-home). 라벨을 다른 프로젝트 것으로 두면 남의
     # 디렉토리를 배포하게 되므로 반드시 home 이어야 한다.
