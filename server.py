@@ -63,6 +63,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             self.proxy()
         else:
             self._route_notice_page()
+            self._route_root_favicon()
             super().do_GET()
 
     def _is_legacy_pos_path(self) -> bool:
@@ -92,6 +93,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             self.end_headers()
         else:
             self._route_notice_page()
+            self._route_root_favicon()
             super().do_HEAD()
 
     def do_POST(self):
@@ -131,6 +133,16 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             elif rest.isdigit():
                 self.path = '/notice-detail.html'
             # 그 외는 그대로 둔다 (정적 파일 없음 -> 404)
+
+    def _route_root_favicon(self):
+        """루트 /favicon.ico 요청을 아이콘 파일로 잇는다.
+
+        즐겨찾기, RSS 리더, 일부 크롤러는 <link rel="icon"> 을 읽지 않고 루트를
+        곧장 때린다. 아이콘 원본은 assets/icons 아래 모아 두고 싶으므로 루트에
+        복사본을 두는 대신 경로만 바꿔준다.
+        """
+        if self.path.split('?', 1)[0] == '/favicon.ico':
+            self.path = '/assets/icons/favicon.ico'
 
     def _method_not_allowed(self):
         payload = json.dumps(

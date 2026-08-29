@@ -12,6 +12,7 @@ stdlib unittest 만 쓴다 (pytest 미설치 환경).
 import http.client
 import json
 import os
+import re
 import tempfile
 import threading
 import unittest
@@ -679,6 +680,82 @@ class NoticeSecurityTests(_BaseAPITestCase):
         for marker in leak_markers:
             self.assertNotIn(marker, error_text,
                               f'에러 메시지에 내부 정보가 샜다: {error_text!r}')
+
+
+class FaviconTests(_BaseAPITestCase):
+    """파비콘: 루트 /favicon.ico 라우팅과 HTML 이 거는 아이콘 파일의 실재 여부."""
+
+    # SimpleHTTPRequestHandler 는 요청 시점의 CWD 를 문서 루트로 삼는다. 테스트가
+    # 어느 디렉토리에서 돌든 저장소 루트를 보도록 이 파일 위치를 기준으로 잡는다.
+    REPO_ROOT = os.path.dirname(os.path.abspath(__file__))
+    ICO_MAGIC = b'\x00\x00\x01\x00'
+
+    def setUp(self):
+        super().setUp()
+        cwd = os.getcwd()
+        os.chdir(self.REPO_ROOT)
+        self.addCleanup(os.chdir, cwd)
+
+    def raw_get(self, path, method='GET'):
+        """정적 파일용. req() 는 JSON 을 기대하므로 바이너리는 여기서 직접 받는다."""
+        conn = http.client.HTTPConnection('127.0.0.1', self.port, timeout=5)
+        try:
+            conn.request(method, path)
+            res = conn.getresponse()
+            return res.status, res.getheader('Content-Type'), res.read()
+        finally:
+            conn.close()
+
+    def test_root_favicon_ico_serves_icon(self):
+        status, ctype, body = self.raw_get('/favicon.ico')
+        self.assertEqual(status, 200, '루트 /favicon.ico 가 404 면 즐겨찾기·크롤러가 아이콘을 못 찾는다')
+        self.assertTrue(body.startswith(self.ICO_MAGIC), f'ICO 헤더가 아니다: {body[:8]!r}')
+        self.assertIsNotNone(ctype)
+
+    def test_root_favicon_ico_head_matches_get(self):
+        # do_GET 만 고치고 do_HEAD 를 빠뜨리는 실수를 잡는다.
+        status, _, body = self.raw_get('/favicon.ico', method='HEAD')
+        self.assertEqual(status, 200)
+        self.assertEqual(body, b'')
+
+    def test_favicon_query_string_still_routes(self):
+        # 캐시 무효화용 ?v= 를 붙여도 경로 판정이 깨지면 안 된다.
+        status, _, body = self.raw_get('/favicon.ico?v=2')
+        self.assertEqual(status, 200)
+        self.assertTrue(body.startswith(self.ICO_MAGIC))
+
+    def test_favicon_prefix_paths_are_not_hijacked(self):
+        # '/favicon.icon' 같은 경로까지 잘못 붙잡으면 안 된다 (정적 파일 없음 -> 404).
+        status, _, _ = self.raw_get('/favicon.icon')
+        self.assertEqual(status, 404)
+
+    def test_index_icon_links_all_resolve(self):
+        """index.html 이 거는 아이콘 경로를 실제로 GET 해서 200 을 확인한다.
+
+        파일명을 바꾸고 링크를 안 고치면 탭 아이콘이 조용히 빈칸이 된다. CI 도
+        같은 검사를 하지만, 로컬에서 먼저 걸리는 편이 낫다.
+        """
+        with open(os.path.join(self.REPO_ROOT, 'index.html'), encoding='utf-8') as f:
+            html = f.read()
+        hrefs = re.findall(r'<link rel="(?:icon|apple-touch-icon)"[^>]*href="([^"]+)"', html)
+        self.assertGreaterEqual(len(hrefs), 2, f'아이콘 link 태그를 못 찾았다: {hrefs}')
+        for href in hrefs:
+            with self.subTest(href=href):
+                status, _, body = self.raw_get(href)
+                self.assertEqual(status, 200, f'{href} 가 200 이 아니다')
+                self.assertGreater(len(body), 0, f'{href} 가 빈 파일이다')
+
+    def test_all_pages_share_the_same_icon_block(self):
+        """네 페이지가 같은 아이콘 세트를 걸어야 탭을 옮겨다녀도 아이콘이 안 바뀐다."""
+        pages = ('index.html', 'notice.html', 'notice-detail.html', 'notice-form.html')
+        sets = {}
+        for name in pages:
+            with open(os.path.join(self.REPO_ROOT, name), encoding='utf-8') as f:
+                html = f.read()
+            sets[name] = frozenset(
+                re.findall(r'<link rel="(?:icon|apple-touch-icon)"[^>]*href="([^"]+)"', html)
+            )
+        self.assertEqual(len(set(sets.values())), 1, f'페이지마다 아이콘이 다르다: {sets}')
 
 
 if __name__ == '__main__':

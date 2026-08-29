@@ -4,8 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>한입 비트코인 홈</title>
+<!-- .ico 를 맨 앞에 두는 이유: 즐겨찾기·RSS 리더·크롤러는 link 태그를 읽지
+     않고 /favicon.ico 를 바로 때린다. server.py 가 그 경로를 여기로 잇는다. -->
+<link rel="icon" href="/assets/icons/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32.png">
 <link rel="icon" type="image/png" sizes="64x64" href="/assets/icons/favicon-64.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/assets/icons/icon-192.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png">
 <meta name="description" content="한입 비트코인 홈 대시보드">
 <!-- www 와 apex 가 같은 내용을 서빙한다. 대표 주소를 apex 로 못박아 검색엔진이
@@ -201,7 +206,7 @@
   </header>
   <div class="err" id="err" hidden></div>
   <div class="grid" id="grid"></div>
-  <div class="footer">v0.2.1</div>
+  <div class="footer">v0.2.2</div>
 </div>
 
 <script>
