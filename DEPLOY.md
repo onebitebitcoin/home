@@ -25,13 +25,18 @@
 
 **0-1과 0-2는 Claude가 대신할 수 없다. 셋 다 끝난 것을 확인하고 1절로 간다.**
 
-### 0-1. Cloudflare에 apex 레코드 추가
+### 0-1. Cloudflare에 apex 레코드 추가 — **2026-08-29 완료**
 
-이 글을 쓰는 시점에 `onebitebitcoin.com`(apex)에는 **DNS 레코드가 없다.**
-서브도메인(`daily`·`fee`·`meet` …)만 있다.
+`onebitebitcoin.com`과 `www.onebitebitcoin.com` 둘 다 형제 도메인과 같은
+Cloudflare IP로 해석된다. 이 단계는 끝났다.
 
-Cloudflare 대시보드에서 `onebitebitcoin.com` 존에 이 서버를 가리키는
-**A 레코드**를 추가한다. 이름은 `@`, 프록시는 켠다(주황 구름).
+```bash
+dig +short @1.1.1.1 onebitebitcoin.com     # 104.21.29.95 / 172.67.148.186
+```
+
+> 맥에서 `curl`이 `Could not resolve host`를 내는데 `dig`는 되면, 레코드가
+> 없던 시절의 NXDOMAIN이 로컬 DNS 캐시에 남은 것이다. 서버 문제가 아니다:
+> `sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder`
 
 ### 0-2. SSL/TLS 모드 확인
 
@@ -41,13 +46,28 @@ Cloudflare 대시보드에서 `onebitebitcoin.com` 존에 이 서버를 가리�
 
 같은 존의 다른 서브도메인이 이미 정상이면 대개 이미 맞춰져 있다.
 
-### 0-3. 옛 정적 허브의 흔적 확인
+### 0-3. 옛 정적 허브 — **지금 이 자리에서 돌고 있다**
 
-`onebitebitcoin.com`은 예전에 **정적 파일 방식**으로 서빙된 적이 있다.
-`onebitebitcoin/home` 저장소의 2026-01 커밋에 있는 `deploy.sh`가
-`index.html`·`favicon.png`·`thumbnail.png`를 `/var/www/html/`로 복사하는
-스크립트다. 지금 앱은 공지 API와 시세 프록시 때문에 파이썬 프로세스가 필요해서
-그 방식으로는 돌지 않는다 — 이 배포가 그 자리를 대체한다.
+`https://onebitebitcoin.com/`은 이미 응답한다. 내용은 **옛 정적 허브**다
+(`<title>한입 비트코인 | 서비스 허브</title>`, `last-modified: 2026-01-01`).
+`www`도 같은 바이트를 돌려준다.
+
+`onebitebitcoin/home` 저장소의 2026-01 커밋에 있던 `deploy.sh`가
+`index.html`·`thumbnail.png`를 `/var/www/html/`로 복사하던 그 결과물이다.
+지금 앱은 공지 API와 시세 프록시 때문에 파이썬 프로세스가 필요해서 그
+방식으로는 돌지 않는다 — **이 배포는 새로 세우는 게 아니라 그 자리를
+갈아끼우는 작업이다.**
+
+그래서 아래 두 가지가 이미 서버에 있다고 보고 시작해야 한다:
+
+* `onebitebitcoin.com`을 `server_name`으로 쥔 nginx vhost
+* 그 vhost가 가리키는 `/var/www/html` (또는 다른 정적 루트)
+
+옛 vhost는 모든 경로를 `index.html`로 떨어뜨린다(SPA식 `try_files` fallback).
+`/notice`도 `/api/notices`도 200을 내지만 전부 옛 허브 HTML이다 — **200이
+나온다고 새 앱이 뜬 것으로 착각하지 마라.** 갈아끼운 뒤에는
+`curl -s https://onebitebitcoin.com/notice | grep -o '<title>[^<]*'`이
+`공지사항 - 한입 비트코인`을 내야 한다.
 
 ```bash
 # 옛 vhost 가 남아 있는지. 있으면 아래 4절이 같은 파일을 덮어쓴다
@@ -304,8 +324,9 @@ docker compose cp web:/data/notices.db ./notices-backup-$(date +%F).db
 
 ## 아직 안 한 것
 
-- **`www.onebitebitcoin.com`**: DNS 레코드는 있는데 오리진이 없어
-  Cloudflare 오류 1016이 난다. 이 배포는 apex만 다룬다. www도 여기로 붙이려면
-  Cloudflare에서 apex와 같은 곳을 가리키게 하고, vhost의 `server_name`과
-  certbot의 `-d`에 `www.onebitebitcoin.com`을 추가해야 한다.
+- **`www.onebitebitcoin.com`**: 지금 apex와 **같은 옛 허브**를 서빙한다
+  (바이트가 동일). 이 배포는 apex만 갈아끼우므로, 그대로 두면 www는 옛 허브에
+  남아 apex와 내용이 갈린다. 같이 옮기려면 vhost의 `server_name`과 certbot의
+  `-d`에 `www.onebitebitcoin.com`을 추가하면 된다 — DNS는 이미 맞다.
+  어느 쪽이든 사람이 정할 몫이라 이번 파일에는 넣지 않았다.
 - **백업 자동화**: 위 `docker compose cp`를 손으로 돌리는 상태다.
