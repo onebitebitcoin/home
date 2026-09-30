@@ -1,6 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
   <!-- 로고 후보 B "궤도"(components/Logo.tsx)의 아이콘판. 16~32px에서도 보이도록 선을 굵게 그린다. -->
-  <rect width="128" height="128" rx="28" fill="#070812" />
   <g transform="translate(14 14)">
     <g transform="rotate(-18 50 50)">
       <path d="M8 50 A42 16 0 0 1 92 50" fill="none" stroke="#4F63C9" stroke-width="5" stroke-linecap="round" />
